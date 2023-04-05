@@ -1,0 +1,44 @@
+name: lint
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  code:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: actions/setup-go@v3
+      with:
+        go-version: "1.19"
+
+    - uses: golangci/golangci-lint-action@v3
+      with:
+        version: v1.50.1
+
+  mod-tidy:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: actions/setup-go@v2
+      with:
+        go-version: "1.20"
+
+    - run: |
+        go mod tidy
+        git diff --exit-code
+
+  apidocs:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - run: make apidocs-lint
